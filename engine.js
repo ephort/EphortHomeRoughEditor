@@ -1623,9 +1623,9 @@ function _MOUSEUP(event) {
             $('#boxinfo').html('Modify the wall');
           }
           $('#wallTools').show(200);
-          document.getElementById('wallWidth').setAttribute('min', 7);
+          document.getElementById('wallWidth').setAttribute('min', 1);
           document.getElementById('wallWidth').setAttribute('max', 50);
-          document.getElementById('wallWidthScale').textContent = "7-50";
+          document.getElementById('wallWidthScale').textContent = "1-50";
           document.getElementById("wallWidth").value = binder.wall.thick;
           document.getElementById("wallWidthVal").textContent = binder.wall.thick;
           mode = 'edit_wall_mode';
