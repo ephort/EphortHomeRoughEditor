@@ -329,60 +329,6 @@ function _MOUSEMOVE(event) {
     }
   } // END DOOR MODE
 
-  //**************************************************************************
-  //**************        NODE MODE *****************************************
-  //**************************************************************************
-
-  if (mode == 'node_mode') {
-
-    snap = calcul_snap(event, grid_snap);
-
-    if (typeof (binder) == 'undefined') {
-      if (addNode = editor.nearWall(snap, 30)) {
-        var x2 = addNode.wall.end.x;
-        var y2 = addNode.wall.end.y;
-        var x1 = addNode.wall.start.x;
-        var y1 = addNode.wall.start.y;
-        angleWall = qSVG.angle(x1, y1, x2, y2);
-        binder = qSVG.create('boxbind', 'path', {
-          id: "circlebinder",
-          d: "M-20,-10 L-13,0 L-20,10 Z M-13,0 L13,0 M13,0 L20,-10 L20,10 Z",
-          stroke: "#5cba79",
-          fill: "#5cba79",
-          "stroke-width": "1.5px"
-        });
-        binder.attr({
-          "transform": "translate(" + (addNode.x) + "," + (addNode.y) + ") rotate(" + (angleWall.deg + 90) + ",0,0)"
-        });
-        binder.data = addNode;
-        binder.x1 = x1;
-        binder.x2 = x2;
-        binder.y1 = y1;
-        binder.y2 = y2;
-      }
-    } else {
-      if (addNode = editor.nearWall(snap, 30)) {
-        if (addNode) {
-          var x2 = addNode.wall.end.x;
-          var y2 = addNode.wall.end.y;
-          var x1 = addNode.wall.start.x;
-          var y1 = addNode.wall.start.y;
-          angleWall = qSVG.angle(x1, y1, x2, y2);
-          binder.attr({
-            "transform": "translate(" + (addNode.x) + "," + (addNode.y) + ") rotate(" + (angleWall.deg + 90) + ",0,0)"
-          });
-          binder.data = addNode;
-        }
-        else {
-          binder.remove();
-          delete binder;
-        }
-      } else {
-        binder.remove();
-        delete binder;
-      }
-    }
-  } // END NODE MODE
 
   //**********************************  SELECT MODE ***************************************************************
   if (mode == 'select_mode' && drag == 'off') { // FIRST TEST ON SELECT MODE (and drag OFF) to detect MOUSEOVER DOOR
@@ -1583,6 +1529,14 @@ function _MOUSEUP(event) {
   // **************************** END LINE MODE MOUSE UP **************************
 
   //**************************************************************************************
+  //********************** WALL DISTANCE MODE MOUSE UP ***********************************
+  //**************************************************************************************
+  if (mode == 'wall_distance_mode') {
+    $('#panel').hide(100);
+    $('#distanceTools').show(200);
+  }
+
+  //**************************************************************************************
   //**********************      BIND MODE MOUSE UP    ************************************
   //**************************************************************************************
 
@@ -1623,9 +1577,9 @@ function _MOUSEUP(event) {
             $('#boxinfo').html('Modify the wall');
           }
           $('#wallTools').show(200);
-          document.getElementById('wallWidth').setAttribute('min', 7);
+          document.getElementById('wallWidth').setAttribute('min', 1);
           document.getElementById('wallWidth').setAttribute('max', 50);
-          document.getElementById('wallWidthScale').textContent = "7-50";
+          document.getElementById('wallWidthScale').textContent = "1-50";
           document.getElementById("wallWidth").value = binder.wall.thick;
           document.getElementById("wallWidthVal").textContent = binder.wall.thick;
           mode = 'edit_wall_mode';

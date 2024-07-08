@@ -124,17 +124,27 @@
 
   <div id="areaValue"></div>
 
-  <div id="reportTools" class="leftBox" style="width:500px;overflow-y: scroll;overflow-x: hidden">
-    <h2><i class="fa fa-calculator" aria-hidden="true"></i> Report plan.</h2>
-    <br /><br />
-    <h2 class="toHide" id="reportTotalSurface" style="display:none"></h2>
-    <h2 class="toHide" id="reportNumberSurface" style="display:none"></h2>
+  <div id="distanceTools" class="leftBox">
+    <h2 id="distanceToolHeader">Modify the distance</h2>
     <hr />
-    <section id="reportRooms" class="toHide" style="display:none">
+    <section id="wallDistance">
+      <p>Distance</p>
+      <input type="number" id="wallDistanceInput" min="1" step="0.01" class="range" />
     </section>
-    <button class="btn btn-info fully" style="margin-top:50px"
-      onclick="$('#reportTools').hide('500', function(){$('#panel').show(300);});mode = 'select_mode';"><i
-        class="fa fa-2x fa-backward" aria-hidden="true"></i></button>
+    <ul class="list-unstyled">
+      <li>
+        <button class="btn btn-success fully" style="margin-top:50px"
+                onclick="applyWallDistance(window.currentlyEditingWall, $('#wallDistanceInput').val());$('#boxinfo').html('Selection mode');$('#distanceTools').hide('300');$('#panel').show('300');">
+          <i class="fa fa-2x fa-check" aria-hidden="true"></i>
+        </button>
+      </li>
+      <li>
+        <button class="btn btn-info fully" style="margin-top:50px"
+                onclick="fonc_button('select_mode');$('#boxinfo').html('Selection mode');$('#distanceTools').hide('300');$('#panel').show('300');">
+          <i class="fa fa-2x fa-backward" aria-hidden="true"></i>
+        </button>
+      </li>
+    </ul>
   </div>
 
   <div id="wallTools" class="leftBox">
@@ -366,9 +376,6 @@
       <br />
       <li><button class="btn btn-light shadow fully " id="room_mode">CONFIG. ROOMS</button></li>
       <br />
-      <li><button class="btn btn-light shadow fully " id="node_mode"><i class="fa fa-2x fa-scissors"
-            aria-hidden="true"></i></button></li>
-      <br />
       <li><button class="btn btn-light shadow fully " id="distance_mode" data-toggle="tooltip" data-placement="right"
           title="Add a measurement">MEASURE</button></li>
       <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
@@ -379,7 +386,6 @@
         <button class="btn fully door" id="aperture">Aperture</button>
         <button class="btn fully door" id="simple">Simple</button>
         <button class="btn fully door" id="double">Double</button>
-        <button class="btn fully door" id="pocket">Pocket</button>
       </div>
       <li><button class="btn btn-light shadow fully " id="door_mode"
           onclick="$('.sub').hide();$('#door_list').toggle(200);$('#window_list').hide();">DOOR</button></li>
@@ -396,82 +402,8 @@
       <li><button class="btn btn-light shadow fully object" id="stair_mode"
           onclick="$('.sub').hide();$('#door_list').hide()">STAIR</button></li>
       <br />
-      <div id="energy_list" class="list-unstyled sub"
-        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;bottom:40px;width:600px">
-        <div style="width:600px;float:left;padding:10px">
-          <p>Energy</p>
-          <div style="float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
-            <p>High current</p>
-            <div style="width:120px;float:left;padding:2px">
-              <button class="btn btn-light fully object" id="gtl">Switchboard</button>
-              <button class="btn btn-light fully object" id="switch">Switch</button>
-              <button class="btn btn-light fully object" id="doubleSwitch">Multiways</button>
-              <button class="btn btn-light fully object" id="dimmer">Variator</button>
 
-            </div>
-            <div style="width:120px;float:left;padding:2px">
-              <button class="btn btn-light fully object" id="plug">Electrical outlet</button>
-              <button class="btn btn-light fully object" id="plug20">Outlet 20A</button>
-              <button class="btn btn-light fully object" id="plug32">Outlet 32A</button>
-              <button class="btn btn-light fully object" id="rooflight shadow">Ceiling lamp</button>
-              <button class="btn btn-light fully object" id="walllight shadow">Wall light</button>
-            </div>
-          </div>
-          <div style="width:130px;float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
-            <p>Low current</p>
-            <button class="btn btn-light fully object" id="www">Internet access</button>
-            <button class="btn btn-light fully object" id="rj45">RJ45 plug</button>
-            <button class="btn btn-light fully object" id="tv">Antenna plug</button>
-          </div>
-
-          <div style="width:130px;float:left;padding:10px;margin:5px;border:1px solid #ddd;border-radius:5px">
-            <p>Thermal</p>
-            <button class="btn btn-light fully object" id="boiler">Boiler</button>
-            <button class="btn btn-light fully object" id="heater">Water heater</button>
-            <button class="btn btn-light fully object" id="radiator">Radiator</button>
-          </div>
-        </div>
-
-      </div>
-      <li><button class="btn btn-light shadow fully " id="object_mode"
-          onclick="$('.sub').hide();$('#energy_list').toggle(200);">ENERGY</button></li>
-      <!-- <li><button class="btn btn-light shadow fully " id="object_mode" onclick="$('.sub').hide();$('#object_list').toggle(200);">FURNITURE</button></li> -->
-      <br />
-
-      <li><button class="btn btn-light shadow fully " id="layer_mode"
-          onclick="$('.sub').hide();$('#layer_list').toggle(200);">Layers</button></li>
-
-      <div id="layer_list" class="list-unstyled sub"
-        style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;bottom:100px;width:200px">
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showRib" checked />
-            <label for="showRib">Measurement</label>
-          </div>
-        </div>
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showArea" checked />
-            <label for="showArea">Surface</label>
-          </div>
-        </div>
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showLayerRoom" checked />
-            <label for="showLayerRoom">Texture</label>
-          </div>
-        </div>
-        <div class="funkyradio" style="font-size:0.8em">
-          <div class="funkyradio-info">
-            <input type="checkbox" id="showLayerEnergy" checked />
-            <label for="showLayerEnergy">Energy</label>
-          </div>
-        </div>
-      </div>
-
-      <li><button class="btn btn-light shadow halfy " id="report_mode" title="Show report"><i class="fa fa-calculator"
-            aria-hidden="true"></i>
-          <button class="btn btn-light shadow halfy pull-right"
+      <li><button class="btn btn-light shadow halfy pull-right"
             onclick="fullscreen();this.style.display='none';$('#nofull_mode').show();" id="full_mode"
             title="Full screen"><i class="fa fa-expand" aria-hidden="true"></i></button>
           <button class="btn btn-light shadow halfy pull-right" style="display:none"
