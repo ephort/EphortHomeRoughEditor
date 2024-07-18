@@ -924,25 +924,11 @@ var editor = {
     return wall;
   },
   reArchitectWalls: function () {
-    for (var i = 0; i < WALLS.length; i++) {
-      if (WALLS[i].start.x > WALLS[i].end.x) {
-        var sx = WALLS[i].start.x;
-        WALLS[i].start.x = WALLS[i].end.x;
-        WALLS[i].end.x = sx;
-
-        var sy = WALLS[i].start.y;
-        WALLS[i].start.y = WALLS[i].end.y;
-        WALLS[i].end.y = sy;
-      } else if (WALLS[i].start.y > WALLS[i].end.y) {
-        var sy = WALLS[i].start.y;
-        WALLS[i].start.y = WALLS[i].end.y;
-        WALLS[i].end.y = sy;
-
-        var sx = WALLS[i].start.x;
-        WALLS[i].start.x = WALLS[i].end.x;
-        WALLS[i].end.x = sx;
+    WALLS.forEach(wall => {
+      if (wall.start.x > wall.end.x || wall.start.y > wall.end.y) {
+        [wall.start, wall.end] = [wall.end, wall.start];
       }
-    }
+    });
     editor.architect(WALLS);
   }
 
