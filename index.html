@@ -592,6 +592,49 @@
     </div>
   </div>
 
+  <div id="calculator"
+       style="display:none;position:absolute;z-index:100;right:-150px;bottom:150px;text-align:center;background:transparent;padding:0px;transition-duration: 0.2s;transition-timing-function: ease-in;">
+    <div class="calculator">
+      <div class="alert alert-danger" role="alert" id="error-message" style="display: none;"></div>
+      <div class="display" id="calc-display">0</div>
+      <div class="calc-buttons">
+        <div class="calc-button">7</div>
+        <div class="calc-button">8</div>
+        <div class="calc-button">9</div>
+        <div class="calc-button operator">+</div>
+        <div class="calc-button">4</div>
+        <div class="calc-button">5</div>
+        <div class="calc-button">6</div>
+        <div class="calc-button operator">-</div>
+        <div class="calc-button">1</div>
+        <div class="calc-button">2</div>
+        <div class="calc-button">3</div>
+        <div class="calc-button operator">*</div>
+        <div class="calc-button">0</div>
+        <div class="calc-button">.</div>
+        <div class="calc-button">←</div>
+        <div class="calc-button operator">/</div>
+        <div class="calc-button ok-button" id="ok-button">OK</div>
+        <div class="calc-button equals-to">=</div>
+      </div>
+    </div>
+
+    <div style="clear:both"></div>
+  </div>
+
+  <div id="updateMeasure"
+       style="position:absolute;z-index:100;right:-150px;bottom:100px;text-align:center;background:transparent;padding:0px;transition-duration: 0.2s;transition-timing-function: ease-in;">
+    <div class="bottom-right-ui">
+      <div class="number-box" id="sizeWall">-</div>
+      <div class="button" >
+        <i class="fa fa-angle-double-up" aria-hidden="true" id="openCalculator"></i>
+        <i class="fa fa-angle-double-down" aria-hidden="true" id="closeCalculator" style="display: none;"></i>
+      </div>
+    </div>
+
+    <div style="clear:both"></div>
+  </div>
+
   <div id="zoomBox"
     style="position:absolute;z-index:100;right:-150px;bottom:20px;text-align:center;background:transparent;padding:0px;color:#fff;transition-duration: 0.2s;transition-timing-function: ease-in;">
     <div class="pull-right" style="margin-right:10px">
@@ -618,5 +661,6 @@
 <script src="qSVG.js"></script>
 <script src="editor.js"></script>
 <script src="engine.js"></script>
+<script src="script.js"></script>
 
 </html>
