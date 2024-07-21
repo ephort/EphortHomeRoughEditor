@@ -3,7 +3,7 @@ WALLS = [];
 OBJDATA = [];
 ROOM = [];
 HISTORY = [];
-wallSize = 20;
+wallSize = 10;
 partitionSize = 8;
 let drag = 'off';
 let action = 0;
@@ -55,7 +55,7 @@ function initHistory(boot = false) {
         HISTORY.push({
             "objData": [],
             "wallData": [{
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 540, "y": 194 },
                 "end": { "x": 540, "y": 734 },
                 "type": "normal",
@@ -66,7 +66,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 550, "y": 204 }, { "x": 530, "y": 184 }, { "x": 530, "y": 744 }, { "x": 550, "y": 724 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 540, "y": 734 },
                 "end": { "x": 1080, "y": 734 },
                 "type": "normal",
@@ -77,7 +77,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 550, "y": 724 }, { "x": 530, "y": 744 }, { "x": 1090, "y": 744 }, { "x": 1070, "y": 724 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1080, "y": 734 },
                 "end": { "x": 1080, "y": 194 },
                 "type": "normal",
@@ -92,7 +92,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1070, "y": 724 }, { "x": 1090, "y": 744 }, { "x": 1090, "y": 184 }, { "x": 1070, "y": 204 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1080, "y": 194 },
                 "end": { "x": 540, "y": 194 },
                 "type": "normal",
@@ -136,7 +136,7 @@ function initHistory(boot = false) {
         HISTORY.push({
             "objData": [],
             "wallData": [{
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 447, "y": 458 },
                 "end": { "x": 447, "y": 744 },
                 "type": "normal",
@@ -147,7 +147,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 457, "y": 468 }, { "x": 437, "y": 448 }, { "x": 437, "y": 754 }, { "x": 457, "y": 734 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 447, "y": 744 },
                 "end": { "x": 1347, "y": 744 },
                 "type": "normal",
@@ -158,7 +158,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 457, "y": 734 }, { "x": 437, "y": 754 }, { "x": 1357, "y": 754 }, { "x": 1337, "y": 734 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1347, "y": 744 },
                 "end": { "x": 1347, "y": 144 },
                 "type": "normal",
@@ -173,7 +173,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1337, "y": 734 }, { "x": 1357, "y": 754 }, { "x": 1357, "y": 134 }, { "x": 1337, "y": 154 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1347, "y": 144 },
                 "end": { "x": 1020, "y": 144 },
                 "type": "normal",
@@ -184,7 +184,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1337, "y": 154 }, { "x": 1357, "y": 134 }, { "x": 1010, "y": 134 }, { "x": 1030, "y": 154 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1020, "y": 144 },
                 "end": { "x": 1020, "y": 458 },
                 "type": "normal",
@@ -199,7 +199,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1030, "y": 154 }, { "x": 1010, "y": 134 }, { "x": 1010, "y": 448 }, { "x": 1030, "y": 468 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1020, "y": 458 },
                 "end": { "x": 447, "y": 458 },
                 "type": "normal",
@@ -1855,7 +1855,7 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10) {
                 ((sizeObj) * 0.866)) + "," + ((-sizeObj / 2) - (thickObj / 2)) + "  A" + sizeObj + "," +
                 sizeObj + " 0 0,1 " + sizeObj / 2 + "," + (-thickObj / 2), "none", colorWall, '');
             construc.params.resize = true;
-            construc.params.resizeLimit.width = { min: 20, max: 100 };
+            construc.params.resizeLimit.width = { min: 10, max: 100 };
         }
         if (typeObj === 'twin') {
 
