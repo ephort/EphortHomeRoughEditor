@@ -640,7 +640,7 @@ function _MOUSEMOVE(event) {
     if (starter > grid) {
       if (!$('#line_construc').length) {
         var ws = 20;
-        if (mode == 'partition_mode') ws = 10;
+        if (mode == 'partition_mode') ws = 1;
         lineconstruc = qSVG.create("boxbind", "line", {
           id: "line_construc",
           x1: pox,
@@ -1623,9 +1623,9 @@ function _MOUSEUP(event) {
             $('#boxinfo').html('Modify the wall');
           }
           $('#wallTools').show(200);
-          document.getElementById('wallWidth').setAttribute('min', 7);
-          document.getElementById('wallWidth').setAttribute('max', 50);
-          document.getElementById('wallWidthScale').textContent = "7-50";
+          document.getElementById('wallWidth').setAttribute('min', 1);
+          document.getElementById('wallWidth').setAttribute('max', 100);
+          document.getElementById('wallWidthScale').textContent = "1-100";
           document.getElementById("wallWidth").value = binder.wall.thick;
           document.getElementById("wallWidthVal").textContent = binder.wall.thick;
           mode = 'edit_wall_mode';
