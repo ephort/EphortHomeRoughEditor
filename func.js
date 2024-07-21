@@ -1932,16 +1932,27 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10) {
         construc.params.width = 60;
         construc.params.height = 180;
         if (typeObj === 'simpleStair') {
+            let centerX = 0;
+            let centerY = -thickObj / 2 + 20;
+            let arrowSize = 10;
+
+            let arrowWidth = arrowSize * 0.5;
+            let circleRadius = arrowSize / 4; // Define the radius of the circle
+            let circleCenterY = centerY + thickObj - 25 + circleRadius; // Position the circle below the arrow
+            let arrowPath = `M${centerX - arrowWidth} ${centerY} L${centerX} ${centerY - arrowSize * 2} L${centerX + arrowWidth} ${centerY} Z M${centerX} ${centerY - arrowSize * 2} L${centerX} ${centerY + thickObj - 20} M${centerX} ${circleCenterY} m-${circleRadius}, 0 a ${circleRadius},${circleRadius} 0 1,0 ${circleRadius * 2},0 a ${circleRadius},${circleRadius} 0 1,0 -${circleRadius * 2},0`;
 
             pushToConstruc(construc,
-                "M " + (-sizeObj / 2) + "," + (-thickObj / 2) + " L " + (-sizeObj / 2) + "," + thickObj / 2 + " L " + sizeObj / 2 + "," +
-                thickObj / 2 + " L " + sizeObj / 2 + "," + (-thickObj / 2) + " Z", "#fff", "#000", '');
+                    "M " + (-sizeObj / 2) + "," + (-thickObj / 2) + " L " + (-sizeObj / 2) + "," + thickObj / 2 + " L " + sizeObj / 2 + "," +
+                    thickObj / 2 + " L " + sizeObj / 2 + "," + (-thickObj / 2) + " Z", "#fff", "#000", '');
+
+            pushToConstruc(construc, arrowPath, "#000", "#000", '');
 
             let heightStep = thickObj / (dividerObj);
             for (let i = 1; i < dividerObj + 1; i++) {
                 pushToConstruc(construc, "M " + (-sizeObj / 2) + "," + ((-thickObj / 2) + (i * heightStep)) + " L " + (sizeObj / 2) + "," +
                     ((-thickObj / 2) + (i * heightStep)), "none", "#000", 'none');
             }
+
             construc.params.resizeLimit.width = { min: 40, max: 200 };
             construc.params.resizeLimit.height = { min: 40, max: 400 };
         }
