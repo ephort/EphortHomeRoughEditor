@@ -923,14 +923,6 @@ var editor = {
     }
     return wall;
   },
-  reArchitectWalls: function () {
-    WALLS.forEach(wall => {
-      if (wall.start.x > wall.end.x || wall.start.y > wall.end.y) {
-        [wall.start, wall.end] = [wall.end, wall.start];
-      }
-    });
-    editor.architect(WALLS);
-  }
 
   // END EDITOR
 }

@@ -128,9 +128,8 @@ function initHistory(boot = false) {
         });
         HISTORY[0] = JSON.stringify(HISTORY[0]);
         localStorage.setItem('history', JSON.stringify(HISTORY));
-        editor.reArchitectWalls();
-        load(0);
         save();
+        load(0);
     }
     if (boot === "newL") {
         if (localStorage.getItem('history')) localStorage.removeItem('history');
@@ -236,7 +235,6 @@ function initHistory(boot = false) {
         });
         HISTORY[0] = JSON.stringify(HISTORY[0]);
         localStorage.setItem('history', JSON.stringify(HISTORY));
-        editor.reArchitectWalls();
         load(0);
         save();
     }
