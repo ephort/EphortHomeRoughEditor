@@ -1161,6 +1161,12 @@ function _MOUSEDOWN(event) {
   // **********************   SELECT MODE + BIND   *********************
   // *******************************************************************
   if (mode == 'select_mode') {
+    if (binder.wall) {
+      var sizeWall = qSVG.measure({ x: binder.wall.start.x, y: binder.wall.start.y }, { x: binder.wall.end.x, y: binder.wall.end.y });
+      sizeWall = sizeWall / meter;
+      $("#sizeWall").html(sizeWall.toFixed(2));
+    }
+
     if (typeof (binder) != 'undefined' && (binder.type == 'segment' || binder.type == 'node' || binder.type == 'obj' || binder.type == 'boundingBox')) {
       mode = 'bind_mode';
 
@@ -1179,7 +1185,6 @@ function _MOUSEDOWN(event) {
         pox = node.x;
         poy = node.y;
         var nodeControl = { x: pox, y: poy };
-
         // DETERMINATE DISTANCE OF OPPOSED NODE ON EDGE(s) PARENT(s) OF THIS NODE !!!! NODE 1 -- NODE 2 SYSTE% :-(
         wallListObj = []; // SUPER VAR -- WARNING
         var objWall;
@@ -1542,6 +1547,7 @@ function _MOUSEUP(event) {
 
     var sizeWall = qSVG.measure({ x: x, y: y }, { x: pox, y: poy });
     sizeWall = sizeWall / meter;
+    $("#sizeWall").html(sizeWall.toFixed(2));
     if ($('#line_construc').length && sizeWall > 0.3) {
       var sizeWall = wallSize;
       if (mode == 'partition_mode') sizeWall = partitionSize;
@@ -1643,7 +1649,6 @@ function _MOUSEUP(event) {
           $('#objTools').show('200')
           $('#lin').css('cursor', 'default');
           $('#boxinfo').html('Config. the door/window');
-          console.log('obj ??')
           document.getElementById('doorWindowWidth').setAttribute('min', binder.obj.params.resizeLimit.width.min);
           document.getElementById('doorWindowWidth').setAttribute('max', binder.obj.params.resizeLimit.width.max);
           document.getElementById('doorWindowWidthScale').textContent = binder.obj.params.resizeLimit.width.min + "-" + binder.obj.params.resizeLimit.width.max;
@@ -1675,7 +1680,6 @@ function _MOUSEUP(event) {
           if (!objTarget.params.rotate) $('#objBoundingBoxRotation').hide();
           else $('#objBoundingBoxRotation').show();
           $('#panel').hide(100);
-          console.log(objTarget.params.resizeLimit.width.min)
           $('#objBoundingBox').show('200')
           $('#lin').css('cursor', 'default');
           $('#boxinfo').html('Modify the object');

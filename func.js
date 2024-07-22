@@ -128,7 +128,6 @@ function initHistory(boot = false) {
         });
         HISTORY[0] = JSON.stringify(HISTORY[0]);
         localStorage.setItem('history', JSON.stringify(HISTORY));
-        load(0);
         save();
     }
     if (boot === "newL") {
@@ -622,6 +621,53 @@ document.getElementById('wallWidth').addEventListener("input", function () {
     document.getElementById("wallWidthVal").textContent = sliderValue;
 });
 
+document.getElementById('ok-button').addEventListener("click", function () {
+    let wallLength = $("#calc-display").html();
+    if (Number.isNaN(wallLength)) {
+        return;
+    }
+    let wallBind = binder.wall;
+    if (!editor.canResizeWall(wallBind)) {
+        var errorMessageElement = $('#error-message');
+        errorMessageElement.html('Cann\'t resize the wall connect both ends.');
+        errorMessageElement.show(200);
+        return;
+    }
+    $("#wallHeight").html(wallLength);
+    $("#sizeWall").html(wallLength);
+
+    wallBind = editor.updateTheWall(wallBind, wallLength);
+
+    editor.architect(WALLS);
+    var line = qSVG.create('none', 'line', {
+        x1: wallBind.start.x, y1: wallBind.start.y, x2: wallBind.end.x, y2: wallBind.end.y,
+        "stroke-width": 5,
+        stroke: "#5cba79"
+    });
+    var ball1 = qSVG.create('none', 'circle', {
+        class: "circle_css",
+        cx: wallBind.start.x, cy: wallBind.start.y,
+        r: Rcirclebinder / 1.8
+    });
+    var ball2 = qSVG.create('none', 'circle', {
+        class: "circle_css",
+        cx: wallBind.end.x, cy: wallBind.end.y,
+        r: Rcirclebinder / 1.8
+    });
+    binder.graph = qSVG.create('none', 'g');
+    binder.graph.append(line);
+    binder.graph.append(ball1);
+    binder.graph.append(ball2);
+    $('#boxbind').html(binder.graph);
+    let objWall = editor.objFromWall(wallBind); // LIST OBJ ON EDGE
+    for (let w = 0; w < objWall.length; w++) {
+        objWall[w].update();
+    }
+    rib();
+    $('#calc-display').html('0');
+});
+
+
 document.getElementById("bboxTrash").addEventListener("click", function () {
     binder.obj.graph.remove();
     binder.graph.remove();
@@ -1096,7 +1142,6 @@ tactile = false;
 function calcul_snap(event, state) {
     if (event.touches) {
         let touches = event.changedTouches;
-        console.log("toto")
         eX = touches[0].pageX;
         eY = touches[0].pageY;
         tactile = true;
@@ -1664,7 +1709,7 @@ $('#room_mode').click(function () {
 $('#select_mode').click(function () {
     $('#boxinfo').html('Mode "select"');
     if (typeof (binder) != 'undefined') {
-        binder.remove();
+        binder?.remove();
         delete binder;
     }
 

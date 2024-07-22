@@ -904,9 +904,25 @@ var editor = {
       text.setAttributeNS(null, 'text-anchor', 'middle');
       text.textContent = labelWidth + ' m';
       $('#boxScale').append(text);
-
     }
-  }
+  },
+  canResizeWall: function (wall) {
+    return wall.child === null || wall.parent === null;
+  },
+  updateTheWall: function (wall, newLengthInMeters) {
+    let dx = wall.end.x - wall.start.x;
+    let dy = wall.end.y - wall.start.y;
+    let angle = Math.atan2(dy, dx);
+    let newLengthPixels = newLengthInMeters * meter;
+    if (wall.parent == null) {
+      wall.start.x = wall.end.x - Math.cos(angle) * newLengthPixels;
+      wall.start.y = wall.end.y - Math.sin(angle) * newLengthPixels;
+    } else if (wall.child == null) {
+      wall.end.x = wall.start.x + Math.cos(angle) * newLengthPixels;
+      wall.end.y = wall.start.y + Math.sin(angle) * newLengthPixels;
+    }
+    return wall;
+  },
 
   // END EDITOR
 }
