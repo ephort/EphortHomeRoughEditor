@@ -128,6 +128,7 @@ function initHistory(boot = false) {
         });
         HISTORY[0] = JSON.stringify(HISTORY[0]);
         localStorage.setItem('history', JSON.stringify(HISTORY));
+        load(0);
         save();
     }
     if (boot === "newL") {
