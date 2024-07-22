@@ -1161,9 +1161,12 @@ function _MOUSEDOWN(event) {
   // **********************   SELECT MODE + BIND   *********************
   // *******************************************************************
   if (mode == 'select_mode') {
-    var sizeWall = qSVG.measure({ x: binder.wall.start.x, y: binder.wall.start.y }, { x: binder.wall.end.x, y: binder.wall.end.y });
-    sizeWall = sizeWall / meter;
-    $("#sizeWall").html(sizeWall.toFixed(2));
+    if (binder.wall) {
+      var sizeWall = qSVG.measure({ x: binder.wall.start.x, y: binder.wall.start.y }, { x: binder.wall.end.x, y: binder.wall.end.y });
+      sizeWall = sizeWall / meter;
+      $("#sizeWall").html(sizeWall.toFixed(2));
+    }
+
     if (typeof (binder) != 'undefined' && (binder.type == 'segment' || binder.type == 'node' || binder.type == 'obj' || binder.type == 'boundingBox')) {
       mode = 'bind_mode';
 
