@@ -909,6 +909,96 @@ var editor = {
   canResizeWall: function (wall) {
     return wall.child === null || wall.parent === null;
   },
+  isPointInPath: function (p1, p2, p) {
+    let det = (p2.x - p1.x) * (p.y - p1.y) - (p.x - p1.x) * (p2.y - p1.y);
+    if (det === 0) {
+      // check the range
+        if (p.x >= Math.min(p1.x, p2.x) && p.x <= Math.max(p1.x, p2.x) && p.y >= Math.min(p1.y, p2.y) && p.y <= Math.max(p1.y, p2.y)) {
+            return true;
+        }
+    }
+
+    return false;
+  },
+  getLengthOfObjectsOnWall: function (wall, objData) {
+    let totalLength = 0;
+    if (!objData || objData.length === 0) return totalLength;
+
+    // Sort objects based on their x position to calculate space between them correctly
+    objData.sort((a, b) => a.x - b.x);
+
+    let spaceBetweenObjects = 0;
+    if (objData.length === 1) {
+      let singleObj = objData[0];
+      if (this.isPointInPath(wall.start, wall.end, { x: singleObj.x, y: singleObj.y })) {
+        totalLength = singleObj.width;
+      }
+    } else {
+      for (let i = 0; i < objData.length - 1; i++) {
+        let currentObj = objData[i];
+        let nextObj = objData[i + 1];
+        if (this.isPointInPath(wall.start, wall.end, { x: currentObj.x, y: currentObj.y }) && this.isPointInPath(wall.start, wall.end, { x: nextObj.x, y: nextObj.y })) {
+          totalLength += +currentObj.width;
+          // calculate the end point of currentObj keeping the same angle
+          let dx =  nextObj.x - currentObj.x;
+          let dy =  nextObj.y - currentObj.y;
+          let angle = Math.atan2(dy, dx);
+          let newLengthPixels = +currentObj.width * meter;
+          let newEndX = currentObj.x + Math.cos(angle) * newLengthPixels;
+          let newEndY = currentObj.y + Math.sin(angle) * newLengthPixels;
+          let gap = qSVG.measure({ x: newEndX, y: newEndY }, { x: nextObj.x, y: nextObj.y });
+          spaceBetweenObjects += gap / meter;
+        }
+      }
+      // Add width of the last object since it's not included in the loop
+      totalLength += +objData[objData.length - 1].width;
+    }
+
+    return (totalLength + spaceBetweenObjects).toFixed(2);
+  },
+
+  updateObjectsOnWall: function (wall, objData) {
+    // move objects on a wall in direction of the wall in meters (positive or negative) maintaining the same angle.
+    let dx = wall.end.x - wall.start.x;
+    let dy = wall.end.y - wall.start.y;
+    let angle = Math.atan2(dy, dx);
+    let startPoint = { x: wall.start.x, y: wall.start.y };
+    /*for (let obj of objData) {
+      let newLengthPixels = obj.width * meter;
+      obj.x = startPoint.x + Math.cos(angle) * newLengthPixels;
+      obj.y = startPoint.y + Math.sin(angle) * newLengthPixels;
+      startPoint = { x: obj.x, y: obj.y };
+    }*/
+
+    console.log(objData);
+
+    for (let i = 0; i < objData.length - 1; i++) {
+      debugger;
+      let newStartPoint = {x: 0, y: 0};
+      let newEndPoint = {x: 0, y: 0};
+      let currentObj = objData[i];
+      let nextObj = objData[i + 1];
+      if (this.isPointInPath(wall.start, wall.end, {x: currentObj.x, y: currentObj.y})
+          && this.isPointInPath(wall.start, wall.end, {x: nextObj.x, y: nextObj.y})) {
+        let newLengthPixels = +currentObj.width * meter;
+        // new starting point for object
+        newStartPoint.x = startPoint.x + Math.cos(angle) * newLengthPixels;
+        newStartPoint.y = startPoint.y + Math.sin(angle) * newLengthPixels;
+        // new end point for object
+        newEndPoint.x = newStartPoint.x + Math.cos(angle) * newLengthPixels;
+        newEndPoint.y = newStartPoint.y + Math.sin(angle) * newLengthPixels;
+        // calculate the gap between the end of current object and the start of next object
+        let gap = qSVG.measure(newEndPoint, {x: nextObj.x, y: nextObj.y});
+
+        objData[i].x = newStartPoint.x;
+        objData[i].y = newStartPoint.y;
+
+        // add the gap between the objects to the start point of the next object
+        startPoint = {x: newEndPoint.x + gap, y: newEndPoint.y + gap};
+      }
+    }
+    return objData;
+  },
   updateTheWall: function (wall, newLengthInMeters) {
     let dx = wall.end.x - wall.start.x;
     let dy = wall.end.y - wall.start.y;

@@ -71,6 +71,7 @@ document.addEventListener("keydown", function (event) {
 function _MOUSEMOVE(event) {
   event.preventDefault();
   $('.sub').hide(100);
+  console.log('mode', mode);
 
   //**************************************************************************
   //********************   TEXTE   MODE **************************************
@@ -280,6 +281,7 @@ function _MOUSEMOVE(event) {
           binder.x = startCoords.x;
           binder.y = startCoords.y;
           binder.angle = angleWall;
+          binder.wall = {start: wall.start, end: wall.end, angle: wall.angle};
           binder.update();
           $('#boxbind').append(binder.graph);
         }
@@ -1160,8 +1162,9 @@ function _MOUSEDOWN(event) {
   // *******************************************************************
   // **********************   SELECT MODE + BIND   *********************
   // *******************************************************************
+
   if (mode == 'select_mode') {
-    if (binder.wall) {
+    if (binder && binder?.wall) {
       var sizeWall = qSVG.measure({ x: binder.wall.start.x, y: binder.wall.start.y }, { x: binder.wall.end.x, y: binder.wall.end.y });
       sizeWall = sizeWall / meter;
       $("#sizeWall").html(sizeWall.toFixed(2));

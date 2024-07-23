@@ -626,19 +626,34 @@ document.getElementById('ok-button').addEventListener("click", function () {
     if (Number.isNaN(wallLength)) {
         return;
     }
-    let wallBind = binder.wall;
+    let wallBind = binder?.wall;
+
+    var errorMessageElement = $('#error-message');
     if (!editor.canResizeWall(wallBind)) {
-        var errorMessageElement = $('#error-message');
         errorMessageElement.html('Cann\'t resize the wall connect both ends.');
         errorMessageElement.show(200);
+        setTimeout(function () {
+            errorMessageElement.hide();
+        }, 2000);
+        return;
+    }
+    const lengthOfObjectsOnWall = editor.getLengthOfObjectsOnWall(wallBind, OBJDATA);
+    if (lengthOfObjectsOnWall >= +wallLength) {
+        errorMessageElement.html('The length of the wall is less than the sum of the lengths of the objects on it.');
+        errorMessageElement.show(200);
+        setTimeout(function () {
+            errorMessageElement.hide();
+        }, 2000);
         return;
     }
     $("#wallHeight").html(wallLength);
     $("#sizeWall").html(wallLength);
 
     wallBind = editor.updateTheWall(wallBind, wallLength);
+    if (OBJDATA.length > 0) {
+        OBJDATA = editor.updateObjectsOnWall(wallBind, OBJDATA);
+    }
 
-    editor.architect(WALLS);
     var line = qSVG.create('none', 'line', {
         x1: wallBind.start.x, y1: wallBind.start.y, x2: wallBind.end.x, y2: wallBind.end.y,
         "stroke-width": 5,
@@ -665,6 +680,7 @@ document.getElementById('ok-button').addEventListener("click", function () {
     }
     rib();
     $('#calc-display').html('0');
+    editor.architect(WALLS);
 });
 
 
@@ -1139,7 +1155,7 @@ function zoom_maker(lens, xmove, xview) {
 
 tactile = false;
 
-function calcul_snap(event, state) {
+function  calcul_snap(event, state) {
     if (event.touches) {
         let touches = event.changedTouches;
         eX = touches[0].pageX;
