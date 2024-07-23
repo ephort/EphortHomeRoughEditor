@@ -709,7 +709,6 @@ var qSVG = {
             }
           }
 
-          // console.log("%c%s", "background: yellow; font-size: 14px;","RESEARCH WAY FOR STARTING VERTEX "+bestVertex);
           WAYS = qSVG.segmentTree(bestVertex, vertex);
           if (WAYS.length == 0) {
             vertex[bestVertex].bypass = 1;

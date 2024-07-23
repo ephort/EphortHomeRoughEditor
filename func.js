@@ -3,7 +3,7 @@ WALLS = [];
 OBJDATA = [];
 ROOM = [];
 HISTORY = [];
-wallSize = 20;
+wallSize = 10;
 partitionSize = 1;
 let drag = 'off';
 let action = 0;
@@ -55,7 +55,7 @@ function initHistory(boot = false) {
         HISTORY.push({
             "objData": [],
             "wallData": [{
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 540, "y": 194 },
                 "end": { "x": 540, "y": 734 },
                 "type": "normal",
@@ -66,7 +66,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 550, "y": 204 }, { "x": 530, "y": 184 }, { "x": 530, "y": 744 }, { "x": 550, "y": 724 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 540, "y": 734 },
                 "end": { "x": 1080, "y": 734 },
                 "type": "normal",
@@ -77,7 +77,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 550, "y": 724 }, { "x": 530, "y": 744 }, { "x": 1090, "y": 744 }, { "x": 1070, "y": 724 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1080, "y": 734 },
                 "end": { "x": 1080, "y": 194 },
                 "type": "normal",
@@ -92,7 +92,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1070, "y": 724 }, { "x": 1090, "y": 744 }, { "x": 1090, "y": 184 }, { "x": 1070, "y": 204 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1080, "y": 194 },
                 "end": { "x": 540, "y": 194 },
                 "type": "normal",
@@ -128,7 +128,6 @@ function initHistory(boot = false) {
         });
         HISTORY[0] = JSON.stringify(HISTORY[0]);
         localStorage.setItem('history', JSON.stringify(HISTORY));
-        load(0);
         save();
     }
     if (boot === "newL") {
@@ -136,7 +135,7 @@ function initHistory(boot = false) {
         HISTORY.push({
             "objData": [],
             "wallData": [{
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 447, "y": 458 },
                 "end": { "x": 447, "y": 744 },
                 "type": "normal",
@@ -147,7 +146,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 457, "y": 468 }, { "x": 437, "y": 448 }, { "x": 437, "y": 754 }, { "x": 457, "y": 734 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 447, "y": 744 },
                 "end": { "x": 1347, "y": 744 },
                 "type": "normal",
@@ -158,7 +157,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 457, "y": 734 }, { "x": 437, "y": 754 }, { "x": 1357, "y": 754 }, { "x": 1337, "y": 734 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1347, "y": 744 },
                 "end": { "x": 1347, "y": 144 },
                 "type": "normal",
@@ -173,7 +172,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1337, "y": 734 }, { "x": 1357, "y": 754 }, { "x": 1357, "y": 134 }, { "x": 1337, "y": 154 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1347, "y": 144 },
                 "end": { "x": 1020, "y": 144 },
                 "type": "normal",
@@ -184,7 +183,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1337, "y": 154 }, { "x": 1357, "y": 134 }, { "x": 1010, "y": 134 }, { "x": 1030, "y": 154 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1020, "y": 144 },
                 "end": { "x": 1020, "y": 458 },
                 "type": "normal",
@@ -199,7 +198,7 @@ function initHistory(boot = false) {
                 "coords": [{ "x": 1030, "y": 154 }, { "x": 1010, "y": 134 }, { "x": 1010, "y": 448 }, { "x": 1030, "y": 468 }],
                 "graph": { "0": {}, "context": {}, "length": 1 }
             }, {
-                "thick": 20,
+                "thick": wallSize,
                 "start": { "x": 1020, "y": 458 },
                 "end": { "x": 447, "y": 458 },
                 "type": "normal",
@@ -621,6 +620,53 @@ document.getElementById('wallWidth').addEventListener("input", function () {
     rib();
     document.getElementById("wallWidthVal").textContent = sliderValue;
 });
+
+document.getElementById('ok-button').addEventListener("click", function () {
+    let wallLength = $("#calc-display").html();
+    if (Number.isNaN(wallLength)) {
+        return;
+    }
+    let wallBind = binder.wall;
+    if (!editor.canResizeWall(wallBind)) {
+        var errorMessageElement = $('#error-message');
+        errorMessageElement.html('Cann\'t resize the wall connect both ends.');
+        errorMessageElement.show(200);
+        return;
+    }
+    $("#wallHeight").html(wallLength);
+    $("#sizeWall").html(wallLength);
+
+    wallBind = editor.updateTheWall(wallBind, wallLength);
+
+    editor.architect(WALLS);
+    var line = qSVG.create('none', 'line', {
+        x1: wallBind.start.x, y1: wallBind.start.y, x2: wallBind.end.x, y2: wallBind.end.y,
+        "stroke-width": 5,
+        stroke: "#5cba79"
+    });
+    var ball1 = qSVG.create('none', 'circle', {
+        class: "circle_css",
+        cx: wallBind.start.x, cy: wallBind.start.y,
+        r: Rcirclebinder / 1.8
+    });
+    var ball2 = qSVG.create('none', 'circle', {
+        class: "circle_css",
+        cx: wallBind.end.x, cy: wallBind.end.y,
+        r: Rcirclebinder / 1.8
+    });
+    binder.graph = qSVG.create('none', 'g');
+    binder.graph.append(line);
+    binder.graph.append(ball1);
+    binder.graph.append(ball2);
+    $('#boxbind').html(binder.graph);
+    let objWall = editor.objFromWall(wallBind); // LIST OBJ ON EDGE
+    for (let w = 0; w < objWall.length; w++) {
+        objWall[w].update();
+    }
+    rib();
+    $('#calc-display').html('0');
+});
+
 
 document.getElementById("bboxTrash").addEventListener("click", function () {
     binder.obj.graph.remove();
@@ -1096,7 +1142,6 @@ tactile = false;
 function calcul_snap(event, state) {
     if (event.touches) {
         let touches = event.changedTouches;
-        console.log("toto")
         eX = touches[0].pageX;
         eY = touches[0].pageY;
         tactile = true;
@@ -1664,7 +1709,7 @@ $('#room_mode').click(function () {
 $('#select_mode').click(function () {
     $('#boxinfo').html('Mode "select"');
     if (typeof (binder) != 'undefined') {
-        binder.remove();
+        binder?.remove();
         delete binder;
     }
 
@@ -1855,7 +1900,7 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10) {
                 ((sizeObj) * 0.866)) + "," + ((-sizeObj / 2) - (thickObj / 2)) + "  A" + sizeObj + "," +
                 sizeObj + " 0 0,1 " + sizeObj / 2 + "," + (-thickObj / 2), "none", colorWall, '');
             construc.params.resize = true;
-            construc.params.resizeLimit.width = { min: 20, max: 100 };
+            construc.params.resizeLimit.width = { min: 10, max: 100 };
         }
         if (typeObj === 'twin') {
 
@@ -1932,16 +1977,27 @@ function carpentryCalc(classObj, typeObj, sizeObj, thickObj, dividerObj = 10) {
         construc.params.width = 60;
         construc.params.height = 180;
         if (typeObj === 'simpleStair') {
+            let centerX = 0;
+            let centerY = -thickObj / 2 + 20;
+            let arrowSize = 10;
+
+            let arrowWidth = arrowSize * 0.5;
+            let circleRadius = arrowSize / 4; // Define the radius of the circle
+            let circleCenterY = centerY + thickObj - 25 + circleRadius; // Position the circle below the arrow
+            let arrowPath = `M${centerX - arrowWidth} ${centerY} L${centerX} ${centerY - arrowSize * 2} L${centerX + arrowWidth} ${centerY} Z M${centerX} ${centerY - arrowSize * 2} L${centerX} ${centerY + thickObj - 20} M${centerX} ${circleCenterY} m-${circleRadius}, 0 a ${circleRadius},${circleRadius} 0 1,0 ${circleRadius * 2},0 a ${circleRadius},${circleRadius} 0 1,0 -${circleRadius * 2},0`;
 
             pushToConstruc(construc,
-                "M " + (-sizeObj / 2) + "," + (-thickObj / 2) + " L " + (-sizeObj / 2) + "," + thickObj / 2 + " L " + sizeObj / 2 + "," +
-                thickObj / 2 + " L " + sizeObj / 2 + "," + (-thickObj / 2) + " Z", "#fff", "#000", '');
+                    "M " + (-sizeObj / 2) + "," + (-thickObj / 2) + " L " + (-sizeObj / 2) + "," + thickObj / 2 + " L " + sizeObj / 2 + "," +
+                    thickObj / 2 + " L " + sizeObj / 2 + "," + (-thickObj / 2) + " Z", "#fff", "#000", '');
+
+            pushToConstruc(construc, arrowPath, "#000", "#000", '');
 
             let heightStep = thickObj / (dividerObj);
             for (let i = 1; i < dividerObj + 1; i++) {
                 pushToConstruc(construc, "M " + (-sizeObj / 2) + "," + ((-thickObj / 2) + (i * heightStep)) + " L " + (sizeObj / 2) + "," +
                     ((-thickObj / 2) + (i * heightStep)), "none", "#000", 'none');
             }
+
             construc.params.resizeLimit.width = { min: 40, max: 200 };
             construc.params.resizeLimit.height = { min: 40, max: 400 };
         }
