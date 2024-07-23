@@ -1690,10 +1690,10 @@ function _MOUSEUP(event) {
           document.getElementById('bboxHeight').setAttribute('min', objTarget.params.resizeLimit.height.min);
           document.getElementById('bboxHeight').setAttribute('max', objTarget.params.resizeLimit.height.max);
           document.getElementById('bboxHeightScale').textContent = objTarget.params.resizeLimit.height.min + "-" + objTarget.params.resizeLimit.height.max;
-          $('#stepsCounter').hide();
+         // $('#stepsCounter').hide();
           if (objTarget.class == 'stair') {
             document.getElementById("bboxStepsVal").textContent = objTarget.value;
-            $('#stepsCounter').show();
+            //$('#stepsCounter').show();
           }
           document.getElementById("bboxWidth").value = objTarget.width * 100;
           document.getElementById("bboxWidthVal").textContent = objTarget.width * 100;

@@ -151,11 +151,7 @@
               aria-hidden="true"></i></button></li>
       </section>
       <br />
-      <section id="separate">
-        <p>Separation wall :<br /><small>Transform the wall into simple separation line.</small></p>
-        <li><button class="btn btn-light shadow fully" onclick="editor.invisibleWall();" id="wallInvisible"><i
-              class="fa fa-2x fa-crop" aria-hidden="true"></i></button></li>
-      </section>
+
       <section id="recombine">
         <p>Transform to wall :<br /><small>The thickness will be identical to the last known.</small></p>
         <li><button class="btn btn-light shadow fully" onclick="editor.visibleWall();" id="wallVisible"><i
@@ -184,12 +180,6 @@
       <p><i class="fa fa-compass" aria-hidden="true"></i> Rotation : <span id="bboxRotationVal"></span> °</p>
       <input type="range" id="bboxRotation" step="1" class="range" min="-180" max="180" />
     </section>
-
-    <div id="stepsCounter" style="display:none;">
-      <p><span id="bboxSteps">Nb steps [2-15] : <span id="bboxStepsVal">0</span></span></p>
-      <button class="btn btn-info" id="bboxStepsAdd"><i class="fa fa-plus" aria-hidden="true"></i></button>
-      <button class="btn btn-info" id="bboxStepsMinus"><i class="fa fa-minus" aria-hidden="true"></i></button>
-    </div>
 
     <div id="objBoundingBoxColor" style="display:none">
       <div class="color textEditorColor" data-type="gradientRed"
@@ -301,37 +291,6 @@
     </div>
     <hr />
 
-    <p>Colors</p>
-    <div class="roomColor" data-type="gradientRed" style="background:linear-gradient(30deg, #f55847, #f00);"></div>
-    <div class="roomColor" data-type="gradientYellow" style="background:linear-gradient(30deg,#e4c06e, #ffb000);"></div>
-    <div class="roomColor" data-type="gradientGreen" style="background:linear-gradient(30deg,#88cc6c, #60c437);"></div>
-    <div class="roomColor" data-type="gradientSky" style="background:linear-gradient(30deg,#77e1f4, #00d9ff);"></div>
-    <div class="roomColor" data-type="gradientBlue" style="background:linear-gradient(30deg,#4f72a6, #284d7e);"></div>
-    <div class="roomColor" data-type="gradientGrey" style="background:linear-gradient(30deg,#666666, #aaaaaa);"></div>
-    <div class="roomColor" data-type="gradientWhite" style="background:linear-gradient(30deg,#fafafa, #eaeaea);"></div>
-    <div class="roomColor" data-type="gradientOrange" style="background:linear-gradient(30deg, #f9ad67, #f97f00);">
-    </div>
-    <div class="roomColor" data-type="gradientPurple" style="background:linear-gradient(30deg,#a784d9, #8951da);"></div>
-    <div class="roomColor" data-type="gradientPink" style="background:linear-gradient(30deg,#df67bd, #e22aae);"></div>
-    <div class="roomColor" data-type="gradientBlack" style="background:linear-gradient(30deg,#3c3b3b, #000000);"></div>
-    <div class="roomColor" data-type="gradientNeutral" style="background:linear-gradient(30deg,#e2c695, #c69d56);">
-    </div>
-    <br /><br />
-    <p>Matérials</p>
-    <div class="roomColor" data-type="wood"
-      style="background: url('https://orig00.deviantart.net/e1f2/f/2015/164/8/b/old_oak_planks___seamless_texture_by_rls0812-d8x6htl.jpg');">
-    </div>
-    <div class="roomColor" data-type="tiles"
-      style="background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrkoI2Eiw8ya3J_swhfpZdi_ug2sONsI6TxEd1xN5af3DX9J3R');">
-    </div>
-    <div class="roomColor" data-type="granite"
-      style="background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9_nEMhnWVV47lxEn5T_HWxvFwkujFTuw6Ff26dRTl4rDaE8AdEQ');">
-    </div>
-    <div class="roomColor" data-type="grass"
-      style="background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWh5nEP_Trwo96CJjev6lnKe0_dRdA63RJFaoc3-msedgxveJd');">
-    </div>
-    <div data-type="#ff008a" style="clear:both"></div>
-    <br /><br />
     <input type="hidden" id="roomBackground" value="gradientNeutral" />
     <input type="hidden" id="roomIndex" value="" />
     <button type="button" class="btn btn-primary" id="applySurface">Apply</button>
@@ -366,11 +325,8 @@
       <br />
       <li><button class="btn btn-light shadow fully " id="room_mode">CONFIG. ROOMS</button></li>
       <br />
-      <li><button class="btn btn-light shadow fully " id="node_mode"><i class="fa fa-2x fa-scissors"
-            aria-hidden="true"></i></button></li>
       <br />
-      <li><button class="btn btn-light shadow fully " id="distance_mode" data-toggle="tooltip" data-placement="right"
-          title="Add a measurement">MEASURE</button></li>
+
       <li><button class="btn btn-light shadow fully " id="text_mode" data-toggle="tooltip" data-placement="right"
           title="Add text">TEXT</button></li>
       <br />
@@ -433,13 +389,9 @@
         </div>
 
       </div>
-      <li><button class="btn btn-light shadow fully " id="object_mode"
-          onclick="$('.sub').hide();$('#energy_list').toggle(200);">ENERGY</button></li>
+
       <!-- <li><button class="btn btn-light shadow fully " id="object_mode" onclick="$('.sub').hide();$('#object_list').toggle(200);">FURNITURE</button></li> -->
       <br />
-
-      <li><button class="btn btn-light shadow fully " id="layer_mode"
-          onclick="$('.sub').hide();$('#layer_list').toggle(200);">Layers</button></li>
 
       <div id="layer_list" class="list-unstyled sub"
         style="box-shadow:2px 2px 3px #ccc;display:none;background:#fff;border-radius: 0 5px 5px 0; padding:10px;position:absolute;left:200px;bottom:100px;width:200px">
@@ -468,17 +420,6 @@
           </div>
         </div>
       </div>
-
-      <li><button class="btn btn-light shadow halfy " id="report_mode" title="Show report"><i class="fa fa-calculator"
-            aria-hidden="true"></i>
-          <button class="btn btn-light shadow halfy pull-right"
-            onclick="fullscreen();this.style.display='none';$('#nofull_mode').show();" id="full_mode"
-            title="Full screen"><i class="fa fa-expand" aria-hidden="true"></i></button>
-          <button class="btn btn-light shadow halfy pull-right" style="display:none"
-            onclick="outFullscreen();this.style.display='none';$('#full_mode').show();" id="nofull_mode"
-            data-toggle="tooltip" data-placement="right" title="Full screen"><i class="fa fa-compress"
-              aria-hidden="true"></i></button>
-      <li>
 
         <div style="clear:both"></div>
     </ul>
