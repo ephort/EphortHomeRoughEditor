@@ -69,4 +69,56 @@ $(document).ready(function() {
             currentOperation = '';
         }
     });
+
+    $("#download_plan_json").on('click', function () {
+        const history = localStorage.getItem('history');
+
+        if (!history) {
+            alert('No data found');
+            return;
+        }
+
+        const jsonObject = JSON.parse(history);
+        let floorPlan = jsonObject[jsonObject.length - 1];
+
+        if (floorPlan?.objData?.length === 0
+            && floorPlan?.wallData?.length === 0
+            && floorPlan?.roomData?.length === 0) {
+            alert('Nothing to download, Floor plan is empty');
+            return;
+        }
+
+        const blob = new Blob([floorPlan], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'floor_plan.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    $('#jsonFileUpload').on('change', function(event) {
+        const file = event.target.files[0];
+        if (file && file.type === 'application/json') {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const jsonContent = JSON.stringify([e.target.result]);
+                    localStorage.setItem('history', jsonContent);
+                    setTimeout(function () {
+                        load(0, true);
+                    }, 1000);
+                } catch (error) {
+                    alert('Invalid JSON file. Please upload a valid JSON file.');
+                }
+            };
+            reader.readAsText(file);
+        } else {
+            alert('Please upload a valid JSON file.');
+        }
+    });
+
+
 });
