@@ -120,5 +120,61 @@ $(document).ready(function() {
         }
     });
 
+    $('.download_plan').on('click', function (){
+        var type = $(this).data('type');
+        var mimeType = type === 'png' ? 'image/png': 'image/jpeg';
+        var fileName = type === 'png' ? 'floor_plan.png': 'floor_plan.jpeg';
+        var svg = document.getElementById('lin');
+        var svgData = new XMLSerializer().serializeToString(svg);
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
 
+        var defaultWidth = 1920;
+        var defaultHeight = 1080;
+        var scaleFactor = 2;
+
+        var svgWidth = svg.getAttribute('width') ? parseInt(svg.getAttribute('width')) * scaleFactor : defaultWidth;
+        var svgHeight = svg.getAttribute('height') ? parseInt(svg.getAttribute('height')) * scaleFactor : defaultHeight;
+
+        canvas.width = svgWidth;
+        canvas.height = svgHeight;
+
+        var img = new Image();
+        img.onload = function() {
+            ctx.fillStyle = '#fffaec';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.drawImage(img, 0, 0, svgWidth, svgHeight);
+            var imgURL = canvas.toDataURL(mimeType);
+            var dlLink = document.createElement('a');
+            dlLink.download = fileName;
+            dlLink.href = imgURL;
+            document.body.appendChild(dlLink);
+            dlLink.click();
+            document.body.removeChild(dlLink);
+        };
+
+        img.onerror = function() {
+            console.error("Error loading SVG as image.");
+        };
+
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
+    });
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown button')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
 });
+
+function toggleDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
