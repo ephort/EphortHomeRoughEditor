@@ -640,7 +640,7 @@ function _MOUSEMOVE(event) {
     if (starter > grid) {
       if (!$('#line_construc').length) {
         var ws = wallSize;
-        if (mode == 'partition_mode') ws = 10;
+        if (mode == 'partition_mode') ws = 1;
         lineconstruc = qSVG.create("boxbind", "line", {
           id: "line_construc",
           x1: pox,
