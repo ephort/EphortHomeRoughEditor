@@ -910,6 +910,7 @@ var editor = {
     return wall.child === null || wall.parent === null;
   },
   isPointInPath: function (p1, p2, p) {
+    console.log('p1', p1, 'p2', p2, 'p', p);
     let det = (p2.x - p1.x) * (p.y - p1.y) - (p.x - p1.x) * (p2.y - p1.y);
     if (det === 0) {
       // check the range
@@ -920,84 +921,96 @@ var editor = {
 
     return false;
   },
+  getObjectsOnWall: function (wall, objList) {
+    let objData = [];
+    for (let obj of objList) {
+      if (this.isPointInPath(wall.start, wall.end, {x: obj.x, y: obj.y})) {
+        objData.push(obj);
+      }
+    }
+    return objData;
+  },
   getLengthOfObjectsOnWall: function (wall, objData) {
     let totalLength = 0;
     if (!objData || objData.length === 0) return totalLength;
 
-    // Sort objects based on their x position to calculate space between them correctly
-    objData.sort((a, b) => a.x - b.x);
+    // get only the objects on the wall
+    objData = objData.filter(obj => obj.x !== undefined  || obj.y !== undefined);
+    const objOnWall = this.getObjectsOnWall(wall, objData);
 
-    let spaceBetweenObjects = 0;
-    if (objData.length === 1) {
-      let singleObj = objData[0];
-      if (this.isPointInPath(wall.start, wall.end, { x: singleObj.x, y: singleObj.y })) {
-        totalLength = singleObj.width;
-      }
-    } else {
-      for (let i = 0; i < objData.length - 1; i++) {
-        let currentObj = objData[i];
-        let nextObj = objData[i + 1];
-        if (this.isPointInPath(wall.start, wall.end, { x: currentObj.x, y: currentObj.y }) && this.isPointInPath(wall.start, wall.end, { x: nextObj.x, y: nextObj.y })) {
-          totalLength += +currentObj.width;
-          // calculate the end point of currentObj keeping the same angle
-          let dx =  nextObj.x - currentObj.x;
-          let dy =  nextObj.y - currentObj.y;
-          let angle = Math.atan2(dy, dx);
-          let newLengthPixels = +currentObj.width * meter;
-          let newEndX = currentObj.x + Math.cos(angle) * newLengthPixels;
-          let newEndY = currentObj.y + Math.sin(angle) * newLengthPixels;
-          let gap = qSVG.measure({ x: newEndX, y: newEndY }, { x: nextObj.x, y: nextObj.y });
-          spaceBetweenObjects += gap / meter;
-        }
-      }
-      // Add width of the last object since it's not included in the loop
-      totalLength += +objData[objData.length - 1].width;
+    for (let i = 0; i < objOnWall.length; i++) {
+      totalLength += +objOnWall[i].width;
     }
-
-    return (totalLength + spaceBetweenObjects).toFixed(2);
+    // Add width of the last object since it's not included in the loop
+    return totalLength + objOnWall.length + 1;
   },
 
-  updateObjectsOnWall: function (wall, objData) {
+  updateObjectsOnWall: function (wall, oldWall, objData) {
     // move objects on a wall in direction of the wall in meters (positive or negative) maintaining the same angle.
+    let objOnWall = this.getObjectsOnWall(oldWall, objData);
+
+    if(objOnWall.length === 0) {
+      return objData;
+    }
+
     let dx = wall.end.x - wall.start.x;
     let dy = wall.end.y - wall.start.y;
     let angle = Math.atan2(dy, dx);
-    let startPoint = { x: wall.start.x, y: wall.start.y };
-    /*for (let obj of objData) {
-      let newLengthPixels = obj.width * meter;
-      obj.x = startPoint.x + Math.cos(angle) * newLengthPixels;
-      obj.y = startPoint.y + Math.sin(angle) * newLengthPixels;
-      startPoint = { x: obj.x, y: obj.y };
+    let startPoint = {};
+    if (wall.parent == null) {
+      startPoint = {x: wall.start.x, y: wall.start.y};
+    } else if (wall.child == null) {
+      startPoint = {x: wall.end.x, y: wall.end.y};
+    }
+
+    objOnWall.sort( (a, b) => a.x - b.x || a.y - b.y);
+    let cosAngle = Math.cos(angle);
+    let sinAngle = Math.sin(angle);
+
+    let newStartPoint = {x: 0, y: 0};
+    let newEndPoint = {x: 0, y: 0};
+    let gap = meter;
+
+    for (let i = 0; i < objOnWall.length; i++) {
+      debugger;
+      newStartPoint = {x: 0, y: 0};
+      newEndPoint = {x: 0, y: 0};
+      let currentObj = objOnWall[i];
+      let newLengthPixels = +currentObj.width * meter;
+
+      newStartPoint.x = startPoint.x + cosAngle * gap;
+      newStartPoint.y = startPoint.y + sinAngle * gap;
+      if (wall.parent == null) {
+        // new end point for object
+        newEndPoint.x = newStartPoint.x - cosAngle * newLengthPixels;
+        newEndPoint.y = newStartPoint.y - sinAngle * newLengthPixels;
+      } else if (wall.child == null) {
+        newEndPoint.x = newStartPoint.x + cosAngle * newLengthPixels;
+        newEndPoint.y = newStartPoint.y + sinAngle * newLengthPixels;
+      }
+      // calculate the gap between the end of current object and the start of next object
+      objOnWall[i].x = newStartPoint.x;
+      objOnWall[i].y = newStartPoint.y;
+
+      // add the gap between the objects to the start point of the next object
+      startPoint.x = newEndPoint.x;
+      startPoint.y = newEndPoint.y;
+    }
+    // update the last object
+ /*   objOnWall[objOnWall.length - 1].x = startPoint.x;
+    objOnWall[objOnWall.length - 1].y = startPoint.y;*/
+
+    // update the objData with the new positions of the objects
+    /*for(let obj of objData) {
+        for(let objOnWall of objOnWall) {
+            if(obj.wall === objOnWall.x && obj.y === objOnWall.y) {
+                obj = objOnWall;
+            }
+        }
     }*/
 
-    console.log(objData);
 
-    for (let i = 0; i < objData.length - 1; i++) {
-      debugger;
-      let newStartPoint = {x: 0, y: 0};
-      let newEndPoint = {x: 0, y: 0};
-      let currentObj = objData[i];
-      let nextObj = objData[i + 1];
-      if (this.isPointInPath(wall.start, wall.end, {x: currentObj.x, y: currentObj.y})
-          && this.isPointInPath(wall.start, wall.end, {x: nextObj.x, y: nextObj.y})) {
-        let newLengthPixels = +currentObj.width * meter;
-        // new starting point for object
-        newStartPoint.x = startPoint.x + Math.cos(angle) * newLengthPixels;
-        newStartPoint.y = startPoint.y + Math.sin(angle) * newLengthPixels;
-        // new end point for object
-        newEndPoint.x = newStartPoint.x + Math.cos(angle) * newLengthPixels;
-        newEndPoint.y = newStartPoint.y + Math.sin(angle) * newLengthPixels;
-        // calculate the gap between the end of current object and the start of next object
-        let gap = qSVG.measure(newEndPoint, {x: nextObj.x, y: nextObj.y});
-
-        objData[i].x = newStartPoint.x;
-        objData[i].y = newStartPoint.y;
-
-        // add the gap between the objects to the start point of the next object
-        startPoint = {x: newEndPoint.x + gap, y: newEndPoint.y + gap};
-      }
-    }
-    return objData;
+    return objOnWall;
   },
   updateTheWall: function (wall, newLengthInMeters) {
     let dx = wall.end.x - wall.start.x;
@@ -1005,11 +1018,11 @@ var editor = {
     let angle = Math.atan2(dy, dx);
     let newLengthPixels = newLengthInMeters * meter;
     if (wall.parent == null) {
-      wall.start.x = wall.end.x - Math.cos(angle) * newLengthPixels;
-      wall.start.y = wall.end.y - Math.sin(angle) * newLengthPixels;
+      wall.start.x = Math.round(wall.end.x - Math.cos(angle) * newLengthPixels);
+      wall.start.y = Math.round(wall.end.y - Math.sin(angle) * newLengthPixels);
     } else if (wall.child == null) {
-      wall.end.x = wall.start.x + Math.cos(angle) * newLengthPixels;
-      wall.end.y = wall.start.y + Math.sin(angle) * newLengthPixels;
+      wall.end.x = Math.round(wall.start.x + Math.cos(angle) * newLengthPixels);
+      wall.end.y = Math.round(wall.start.y + Math.sin(angle) * newLengthPixels);
     }
     return wall;
   },

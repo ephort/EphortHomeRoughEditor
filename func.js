@@ -637,7 +637,8 @@ document.getElementById('ok-button').addEventListener("click", function () {
         }, 2000);
         return;
     }
-    const lengthOfObjectsOnWall = editor.getLengthOfObjectsOnWall(wallBind, OBJDATA);
+    const oldWall = JSON.parse(JSON.stringify(wallBind));
+    const lengthOfObjectsOnWall = editor.getLengthOfObjectsOnWall(oldWall, OBJDATA);
     if (lengthOfObjectsOnWall >= +wallLength) {
         errorMessageElement.html('The length of the wall is less than the sum of the lengths of the objects on it.');
         errorMessageElement.show(200);
@@ -651,7 +652,7 @@ document.getElementById('ok-button').addEventListener("click", function () {
 
     wallBind = editor.updateTheWall(wallBind, wallLength);
     if (OBJDATA.length > 0) {
-        OBJDATA = editor.updateObjectsOnWall(wallBind, OBJDATA);
+        OBJDATA = editor.updateObjectsOnWall(wallBind, oldWall, OBJDATA);
     }
 
     var line = qSVG.create('none', 'line', {
