@@ -370,12 +370,28 @@ document.getElementById('ok-button').addEventListener("click", function () {
         return;
     }
     let wallBind = binder.wall;
+    var errorMessageElement = $('#error-message');
     if (!editor.canResizeWall(wallBind)) {
-        var errorMessageElement = $('#error-message');
-        errorMessageElement.html('Cann\'t resize the wall connect both ends.');
+        errorMessageElement.html('Cann\'t resize the wall with both ends connected.');
         errorMessageElement.show(200);
+        $('#calc-display').html('0');
+        setTimeout(function () {
+            errorMessageElement.hide();
+        }, 3000);
         return;
     }
+    const objectsOnWall = editor.getObjectsOnWall(wallBind, OBJDATA);
+
+    if (objectsOnWall.length > 0) {
+        errorMessageElement.html('Cann\'t resize the wall with windows/doors on it.');
+        errorMessageElement.show(200);
+        $('#calc-display').html('0');
+        setTimeout(function () {
+            errorMessageElement.hide();
+        }, 2000);
+        return;
+    }
+
     $("#wallHeight").html(wallLength);
     $("#sizeWall").html(wallLength);
 
