@@ -909,6 +909,18 @@ var editor = {
   canResizeWall: function (wall) {
     return wall.child === null || wall.parent === null;
   },
+  isPointInPath: function (p1, p2, p) {
+    return p.x >= Math.min(p1.x, p2.x) && p.x <= Math.max(p1.x, p2.x) && p.y >= Math.min(p1.y, p2.y) && p.y <= Math.max(p1.y, p2.y);
+  },
+  getObjectsOnWall: function (wall, objList) {
+    let objData = [];
+    for (let obj of objList) {
+      if (this.isPointInPath(wall.start, wall.end, {x: Math.round(obj.x), y: Math.round(obj.y)})) {
+        objData.push(obj);
+      }
+    }
+    return objData;
+  },
   updateTheWall: function (wall, newLengthInMeters) {
     let dx = wall.end.x - wall.start.x;
     let dy = wall.end.y - wall.start.y;
