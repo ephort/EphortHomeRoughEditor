@@ -2,11 +2,28 @@ document.querySelector('#lin').addEventListener("mouseup", _MOUSEUP);
 document.querySelector('#lin').addEventListener("mousemove", throttle(function (event) { _MOUSEMOVE(event); }, 30));
 document.querySelector('#lin').addEventListener("mousedown", _MOUSEDOWN, true);
 
+// setup mobile screen events
+document.querySelector('#lin').addEventListener("touchstart", _MOUSEDOWN);
+document.querySelector('#lin').addEventListener("touchmove", throttle(function (event) { _MOUSEMOVE(event); }, 30));
+document.querySelector('#lin').addEventListener("touchend", _MOUSEUP);
+
+function isMobileDevice() {
+  return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 $(document).on('click', '#lin', function (event) {
   event.preventDefault();
 });
 
 document.querySelector('#panel').addEventListener('mousemove', function (event) {
+  mouseMovePanel();
+});
+
+document.querySelector('#panel').addEventListener('touchmove', function (event) {
+  mouseMovePanel();
+});
+
+function mouseMovePanel() {
   if ((mode == 'line_mode' || mode == 'partition_mode') && action == 1) {
     action = 0;
     if (typeof (binder) != 'undefined') {
@@ -18,7 +35,7 @@ document.querySelector('#panel').addEventListener('mousemove', function (event) 
     lengthTemp.remove();
     delete lengthTemp;
   }
-});
+}
 
 window.addEventListener('resize', function (event) {
   width_viewbox = $('#lin').width();
@@ -210,7 +227,7 @@ function _MOUSEMOVE(event) {
   //**************************************************************************
 
   if (mode == 'room_mode') {
-    activeRoomConfigMode();
+    activeRoomConfigMode(event);
   }
 
   //**************************************************************************
@@ -344,187 +361,7 @@ function _MOUSEMOVE(event) {
 
   //**********************************  SELECT MODE ***************************************************************
   if (mode == 'select_mode' && drag == 'off') { // FIRST TEST ON SELECT MODE (and drag OFF) to detect MOUSEOVER DOOR
-
-    snap = calcul_snap(event, 'off');
-
-    var objTarget = false;
-    for (var i = 0; i < OBJDATA.length; i++) {
-      var objX1 = OBJDATA[i].bbox.left;
-      var objX2 = OBJDATA[i].bbox.right;
-      var objY1 = OBJDATA[i].bbox.top;
-      var objY2 = OBJDATA[i].bbox.bottom;
-      var realBboxCoords = OBJDATA[i].realBbox;
-      if (qSVG.rayCasting(snap, realBboxCoords)) {
-        objTarget = OBJDATA[i];
-      }
-    }
-    if (objTarget !== false) {
-      if (typeof (binder) != 'undefined' && (binder.type == 'segment')) {
-        binder.graph.remove();
-        delete binder;
-        cursor('default');
-      }
-      if (objTarget.params.bindBox) { // OBJ -> BOUNDINGBOX TOOL
-        if (typeof (binder) == 'undefined') {
-          binder = new editor.obj2D("free", "boundingBox", "", objTarget.bbox.origin, objTarget.angle, 0, objTarget.size, "normal", objTarget.thick, objTarget.realBbox);
-          binder.update();
-          binder.obj = objTarget;
-          binder.type = 'boundingBox';
-          binder.oldX = binder.x;
-          binder.oldY = binder.y;
-          $('#boxbind').append(binder.graph);
-          if (!objTarget.params.move) cursor('trash'); // LIKE MEASURE ON PLAN
-          if (objTarget.params.move) cursor('move');
-        }
-      }
-      else {  // DOOR, WINDOW, APERTURE.. -- OBJ WITHOUT BINDBOX (params.bindBox = False) -- !!!!
-        if (typeof (binder) == 'undefined') {
-          var wallList = editor.rayCastingWall(objTarget);
-          if (wallList.length > 1) wallList = wallList[0];
-          inWallRib(wallList);
-          var thickObj = wallList.thick;
-          var sizeObj = objTarget.size;
-
-          binder = new editor.obj2D("inWall", "socle", "", objTarget, objTarget.angle, 0, sizeObj, "normal", thickObj);
-          binder.update();
-
-          binder.oldXY = { x: objTarget.x, y: objTarget.y }; // FOR OBJECT MENU
-          $('#boxbind').append(binder.graph);
-        }
-        else {
-          if (event.target == binder.graph.get(0).firstChild) {
-            cursor('move');
-            binder.graph.get(0).firstChild.setAttribute("class", "circle_css_2");
-            binder.type = "obj";
-            binder.obj = objTarget;
-          }
-          else {
-            cursor('default');
-            binder.graph.get(0).firstChild.setAttribute("class", "circle_css_1");
-            binder.type = false;
-          }
-        }
-      }
-    }
-    else {
-      if (typeof (binder) != 'undefined') {
-        if (typeof (binder.graph) != 'undefined') binder.graph.remove();
-        if (binder.type == 'node') binder.remove();
-        delete binder;
-        cursor('default');
-        rib();
-
-      }
-    }
-
-    // BIND CIRCLE IF nearNode and GROUP ALL SAME XY SEG POINTS
-    if (wallNode = editor.nearWallNode(snap, 20)) {
-      if (typeof (binder) == 'undefined' || binder.type == 'segment') {
-        binder = qSVG.create('boxbind', 'circle', {
-          id: "circlebinder",
-          class: "circle_css_2",
-          cx: wallNode.x,
-          cy: wallNode.y,
-          r: Rcirclebinder
-        });
-        binder.data = wallNode;
-        binder.type = "node";
-        if ($('#linebinder').length) $('#linebinder').remove();
-      } else {
-        // REMAKE CIRCLE_CSS ON BINDER AND TAKE DATA SEG GROUP
-        // if (typeof(binder) != 'undefined') {
-        //     binder.attr({
-        //         class: "circle_css_2"
-        //     });
-        // }
-      }
-      cursor('move');
-    } else {
-      if (typeof (binder) != "undefined" && binder.type == 'node') {
-        binder.remove();
-        delete binder;
-        hideAllSize();
-        cursor('default');
-        rib();
-      }
-    }
-
-
-    // BIND WALL WITH NEARPOINT function ---> WALL BINDER CREATION
-    if (wallBind = editor.rayCastingWalls(snap, WALLS)) {
-      if (wallBind.length > 1) wallBind = wallBind[wallBind.length - 1];
-      if (wallBind && typeof (binder) == 'undefined') {
-        var objWall = editor.objFromWall(wallBind);
-        if (objWall.length > 0) editor.inWallRib2(wallBind);
-        binder = {};
-        binder.wall = wallBind;
-        inWallRib(binder.wall);
-        var line = qSVG.create('none', 'line', {
-          x1: binder.wall.start.x, y1: binder.wall.start.y, x2: binder.wall.end.x, y2: binder.wall.end.y,
-          "stroke-width": 5,
-          stroke: "#5cba79"
-        });
-        var ball1 = qSVG.create('none', 'circle', {
-          class: "circle_css",
-          cx: binder.wall.start.x, cy: binder.wall.start.y,
-          r: Rcirclebinder / 1.8
-        });
-        var ball2 = qSVG.create('none', 'circle', {
-          class: "circle_css",
-          cx: binder.wall.end.x, cy: binder.wall.end.y,
-          r: Rcirclebinder / 1.8
-        });
-        binder.graph = qSVG.create('none', 'g');
-        binder.graph.append(line);
-        binder.graph.append(ball1);
-        binder.graph.append(ball2);
-        $('#boxbind').append(binder.graph);
-        binder.type = "segment";
-        cursor('pointer');
-      }
-    } else {
-      if (wallBind = editor.nearWall(snap, 6)) {
-        if (wallBind && typeof (binder) == 'undefined') {
-          wallBind = wallBind.wall;
-          var objWall = editor.objFromWall(wallBind);
-          if (objWall.length > 0) editor.inWallRib2(wallBind);
-          binder = {};
-          binder.wall = wallBind;
-          inWallRib(binder.wall);
-          var line = qSVG.create('none', 'line', {
-            x1: binder.wall.start.x, y1: binder.wall.start.y, x2: binder.wall.end.x, y2: binder.wall.end.y,
-            "stroke-width": 5,
-            stroke: "#5cba79"
-          });
-          var ball1 = qSVG.create('none', 'circle', {
-            class: "circle_css",
-            cx: binder.wall.start.x, cy: binder.wall.start.y,
-            r: Rcirclebinder / 1.8
-          });
-          var ball2 = qSVG.create('none', 'circle', {
-            class: "circle_css",
-            cx: binder.wall.end.x, cy: binder.wall.end.y,
-            r: Rcirclebinder / 1.8
-          });
-          binder.graph = qSVG.create('none', 'g');
-          binder.graph.append(line);
-          binder.graph.append(ball1);
-          binder.graph.append(ball2);
-          $('#boxbind').append(binder.graph);
-          binder.type = "segment";
-          cursor('pointer');
-        }
-      }
-      else {
-        if (typeof (binder) != "undefined" && binder.type == 'segment') {
-          binder.graph.remove();
-          delete binder;
-          hideAllSize();
-          cursor('default');
-          rib();
-        }
-      }
-    }
+    selectModeInMouseMove(event);
   } // END mode == 'select_mode' && drag == 'off'
 
   // ------------------------------  LINE MODE ------------------------------------------------------
@@ -1122,10 +959,10 @@ function _MOUSEDOWN(event) {
       linElement.css('cursor', 'pointer');
       $('#boxinfo').html('Config. of rooms');
       fonc_button('room_mode');
-      activeRoomConfigMode();
+      activeRoomConfigMode(event);
       return;
     }
-    if (binder.wall) {
+    if (typeof (binder) !== 'undefined' && binder.wall) {
       var sizeWall = qSVG.measure({ x: binder.wall.start.x, y: binder.wall.start.y }, { x: binder.wall.end.x, y: binder.wall.end.y });
       sizeWall = sizeWall / meter;
       $("#sizeWall").html(sizeWall.toFixed(2));
@@ -1690,7 +1527,7 @@ function _MOUSEUP(event) {
 }
 
 
-function activeRoomConfigMode() {
+function activeRoomConfigMode(event) {
   snap = calcul_snap(event, grid_snap);
   var roomTarget;
   if (roomTarget = editor.rayCastingRoom(snap)) {
@@ -1732,6 +1569,189 @@ function activeRoomConfigMode() {
     if (typeof (binder) != 'undefined') {
       binder.remove();
       delete binder;
+    }
+  }
+}
+
+function selectModeInMouseMove(event) {
+  snap = calcul_snap(event, 'off');
+
+  var objTarget = false;
+  for (var i = 0; i < OBJDATA.length; i++) {
+    var objX1 = OBJDATA[i].bbox.left;
+    var objX2 = OBJDATA[i].bbox.right;
+    var objY1 = OBJDATA[i].bbox.top;
+    var objY2 = OBJDATA[i].bbox.bottom;
+    var realBboxCoords = OBJDATA[i].realBbox;
+    if (qSVG.rayCasting(snap, realBboxCoords)) {
+      objTarget = OBJDATA[i];
+    }
+  }
+  if (objTarget !== false) {
+    if (typeof (binder) != 'undefined' && (binder.type == 'segment')) {
+      binder.graph.remove();
+      delete binder;
+      cursor('default');
+    }
+    if (objTarget.params.bindBox) { // OBJ -> BOUNDINGBOX TOOL
+      if (typeof (binder) == 'undefined') {
+        binder = new editor.obj2D("free", "boundingBox", "", objTarget.bbox.origin, objTarget.angle, 0, objTarget.size, "normal", objTarget.thick, objTarget.realBbox);
+        binder.update();
+        binder.obj = objTarget;
+        binder.type = 'boundingBox';
+        binder.oldX = binder.x;
+        binder.oldY = binder.y;
+        $('#boxbind').append(binder.graph);
+        if (!objTarget.params.move) cursor('trash'); // LIKE MEASURE ON PLAN
+        if (objTarget.params.move) cursor('move');
+      }
+    }
+    else {  // DOOR, WINDOW, APERTURE.. -- OBJ WITHOUT BINDBOX (params.bindBox = False) -- !!!!
+      if (typeof (binder) == 'undefined') {
+        var wallList = editor.rayCastingWall(objTarget);
+        if (wallList.length > 1) wallList = wallList[0];
+        inWallRib(wallList);
+        var thickObj = wallList.thick;
+        var sizeObj = objTarget.size;
+
+        binder = new editor.obj2D("inWall", "socle", "", objTarget, objTarget.angle, 0, sizeObj, "normal", thickObj);
+        binder.update();
+
+        binder.oldXY = { x: objTarget.x, y: objTarget.y }; // FOR OBJECT MENU
+        $('#boxbind').append(binder.graph);
+      }
+      else {
+        if (event.target == binder.graph.get(0).firstChild) {
+          cursor('move');
+          binder.graph.get(0).firstChild.setAttribute("class", "circle_css_2");
+          binder.type = "obj";
+          binder.obj = objTarget;
+        }
+        else {
+          cursor('default');
+          binder.graph.get(0).firstChild.setAttribute("class", "circle_css_1");
+          binder.type = false;
+        }
+      }
+    }
+  }
+  else {
+    if (typeof (binder) != 'undefined') {
+      if (typeof (binder.graph) != 'undefined') binder.graph.remove();
+      if (binder.type == 'node') binder.remove();
+      delete binder;
+      cursor('default');
+      rib();
+
+    }
+  }
+
+  // BIND CIRCLE IF nearNode and GROUP ALL SAME XY SEG POINTS
+  if (wallNode = editor.nearWallNode(snap, 20)) {
+    if (typeof (binder) == 'undefined' || binder.type == 'segment') {
+      binder = qSVG.create('boxbind', 'circle', {
+        id: "circlebinder",
+        class: "circle_css_2",
+        cx: wallNode.x,
+        cy: wallNode.y,
+        r: Rcirclebinder
+      });
+      binder.data = wallNode;
+      binder.type = "node";
+      if ($('#linebinder').length) $('#linebinder').remove();
+    } else {
+      // REMAKE CIRCLE_CSS ON BINDER AND TAKE DATA SEG GROUP
+      // if (typeof(binder) != 'undefined') {
+      //     binder.attr({
+      //         class: "circle_css_2"
+      //     });
+      // }
+    }
+    cursor('move');
+  } else {
+    if (typeof (binder) != "undefined" && binder.type == 'node') {
+      binder.remove();
+      delete binder;
+      hideAllSize();
+      cursor('default');
+      rib();
+    }
+  }
+
+
+  // BIND WALL WITH NEARPOINT function ---> WALL BINDER CREATION
+  if (wallBind = editor.rayCastingWalls(snap, WALLS)) {
+    if (wallBind.length > 1) wallBind = wallBind[wallBind.length - 1];
+    if (wallBind && typeof (binder) == 'undefined') {
+      var objWall = editor.objFromWall(wallBind);
+      if (objWall.length > 0) editor.inWallRib2(wallBind);
+      binder = {};
+      binder.wall = wallBind;
+      inWallRib(binder.wall);
+      var line = qSVG.create('none', 'line', {
+        x1: binder.wall.start.x, y1: binder.wall.start.y, x2: binder.wall.end.x, y2: binder.wall.end.y,
+        "stroke-width": 5,
+        stroke: "#5cba79"
+      });
+      var ball1 = qSVG.create('none', 'circle', {
+        class: "circle_css",
+        cx: binder.wall.start.x, cy: binder.wall.start.y,
+        r: Rcirclebinder / 1.8
+      });
+      var ball2 = qSVG.create('none', 'circle', {
+        class: "circle_css",
+        cx: binder.wall.end.x, cy: binder.wall.end.y,
+        r: Rcirclebinder / 1.8
+      });
+      binder.graph = qSVG.create('none', 'g');
+      binder.graph.append(line);
+      binder.graph.append(ball1);
+      binder.graph.append(ball2);
+      $('#boxbind').append(binder.graph);
+      binder.type = "segment";
+      cursor('pointer');
+    }
+  } else {
+    if (wallBind = editor.nearWall(snap, 6)) {
+      if (wallBind && typeof (binder) == 'undefined') {
+        wallBind = wallBind.wall;
+        var objWall = editor.objFromWall(wallBind);
+        if (objWall.length > 0) editor.inWallRib2(wallBind);
+        binder = {};
+        binder.wall = wallBind;
+        inWallRib(binder.wall);
+        var line = qSVG.create('none', 'line', {
+          x1: binder.wall.start.x, y1: binder.wall.start.y, x2: binder.wall.end.x, y2: binder.wall.end.y,
+          "stroke-width": 5,
+          stroke: "#5cba79"
+        });
+        var ball1 = qSVG.create('none', 'circle', {
+          class: "circle_css",
+          cx: binder.wall.start.x, cy: binder.wall.start.y,
+          r: Rcirclebinder / 1.8
+        });
+        var ball2 = qSVG.create('none', 'circle', {
+          class: "circle_css",
+          cx: binder.wall.end.x, cy: binder.wall.end.y,
+          r: Rcirclebinder / 1.8
+        });
+        binder.graph = qSVG.create('none', 'g');
+        binder.graph.append(line);
+        binder.graph.append(ball1);
+        binder.graph.append(ball2);
+        $('#boxbind').append(binder.graph);
+        binder.type = "segment";
+        cursor('pointer');
+      }
+    }
+    else {
+      if (typeof (binder) != "undefined" && binder.type == 'segment') {
+        binder.graph.remove();
+        delete binder;
+        hideAllSize();
+        cursor('default');
+        rib();
+      }
     }
   }
 }
